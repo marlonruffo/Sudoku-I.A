@@ -1,4 +1,5 @@
 import json
+import os
 from datetime import datetime
 
 def is_complete(board):
@@ -9,14 +10,26 @@ def is_complete(board):
     return True
 
 
-def save_board_to_json(board, filename="completed_sudoku.json"):
+def save_board_to_json(board):
 
-    current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    
-    filename_with_date = f"{current_time}_{filename}"
-    
-    with open(filename_with_date, "w") as file:
-        json.dump(board, file)
+    jogos_folder = "jogos"
+
+    if not os.path.exists(jogos_folder):
+        os.makedirs(jogos_folder)
+
+    existing_files = os.listdir(jogos_folder)
+    sudoku_files = [f for f in existing_files if f.startswith("sudoku") and f.endswith(".json")]
+
+    next_id = len(sudoku_files) + 1
+    filename = f"sudoku_{next_id}.json"
+    file_path = os.path.join(jogos_folder, filename)
+
+    try:
+        with open(file_path, "w") as file:
+            json.dump(board, file, indent=4)
+        print(f"Tabuleiro salvo em {file_path}")
+    except Exception as e:
+        print(f"Erro ao salvar o tabuleiro completo: {e}")
     
 
 

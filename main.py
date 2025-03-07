@@ -1,5 +1,5 @@
 from sudoku import Sudoku
-from utils import is_complete
+from utils import is_complete, save_board_to_json
 
 def main():
     print("Bem-vindo ao Sudoku!")
@@ -55,6 +55,8 @@ def main():
 
                 print("\nTabuleiro resolvido:")
                 game.display_board()
+                
+                save_board_to_json(game.board)
             else:
                 print("\nNão foi possível resolver o Sudoku.")
                 steps = game.get_steps()

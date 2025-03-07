@@ -2,7 +2,7 @@ import random
 import uuid
 import os
 import json
-from utils import is_complete, log_move
+from utils import is_complete, log_move, save_board_to_json
 from datetime import datetime
 
 
@@ -136,6 +136,9 @@ class Sudoku:
 
     def _solve_sudoku_backtracking_helper(self):
         empty_location = self._find_empty_location()
+
+        if not empty_location:
+            return True
         
         row, col = empty_location
 
