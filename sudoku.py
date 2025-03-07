@@ -17,7 +17,8 @@ class Sudoku:
         self.initialBoard = self.generate_random_board()
         self.attempted_moves = 0  
         self.valid_moves = 0     
-        self.invalid_moves = 0   
+        self.invalid_moves = 0
+        self.steps = 0   
         self.save_initial_log()
         print("O tabuleiro foi iniciado com: " + str(self.count_filled_cells()) + " valores")
 
@@ -119,7 +120,11 @@ class Sudoku:
                 except Exception as e:
                     print(f"Erro ao salvar o log inicial: {e}")
 
+    def get_steps(self):
+        return self.steps
+
     def solve_sudoku_backtracking(self):
+        self.steps = 0
         return self._solve_sudoku_backtracking_helper()
 
     def _find_empty_location(self):
@@ -131,19 +136,17 @@ class Sudoku:
 
     def _solve_sudoku_backtracking_helper(self):
         empty_location = self._find_empty_location()
-        if not empty_location:
-            return True  # Não há posições vazias, o Sudoku está resolvido
-
+        
         row, col = empty_location
 
         for number in range(1, 10):
             if self.is_valid_move(row, col, number):
                 self.board[row][col] = number
+                self.steps += 1
 
                 if self._solve_sudoku_backtracking_helper():
                     return True
 
-                # Desfaz a jogada (backtrack)
                 self.board[row][col] = 0
 
         return False

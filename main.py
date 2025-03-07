@@ -50,11 +50,17 @@ def main():
 
             if game.solve_sudoku_backtracking():
                 print("\nSudoku resolvido com sucesso!")
+                steps = game.get_steps()
+                print(f"Passos necessários para resolver: {steps}")
+
+                print("\nTabuleiro resolvido:")
+                game.display_board()
             else:
                 print("\nNão foi possível resolver o Sudoku.")
+                steps = game.get_steps()
+                print(f"Passos aplicados: {steps}")
 
-            print("\nTabuleiro resolvido:")
-            game.display_board()
+
 
         # elif choice == '3':
 
