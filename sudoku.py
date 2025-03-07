@@ -118,3 +118,32 @@ class Sudoku:
                         json.dump([initial_data], log_file, indent=4)  
                 except Exception as e:
                     print(f"Erro ao salvar o log inicial: {e}")
+
+    def solve_sudoku_backtracking(self):
+        return self._solve_sudoku_backtracking_helper()
+
+    def _find_empty_location(self):
+        for row in range(9):
+            for col in range(9):
+                if self.board[row][col] == 0:
+                    return row, col
+        return None
+
+    def _solve_sudoku_backtracking_helper(self):
+        empty_location = self._find_empty_location()
+        if not empty_location:
+            return True  # Não há posições vazias, o Sudoku está resolvido
+
+        row, col = empty_location
+
+        for number in range(1, 10):
+            if self.is_valid_move(row, col, number):
+                self.board[row][col] = number
+
+                if self._solve_sudoku_backtracking_helper():
+                    return True
+
+                # Desfaz a jogada (backtrack)
+                self.board[row][col] = 0
+
+        return False
