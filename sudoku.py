@@ -14,13 +14,51 @@ class Sudoku:
         self.sudoku_id = str(uuid.uuid4())  # ID único
         self.log_filename = os.path.join(self.logs_folder, f"sudoku_log_{self.sudoku_id}.json")
         self.board = [[0 for _ in range(9)] for _ in range(9)]  
-        self.initialBoard = self.generate_random_board()
+        #self.initialBoard = self.generate_random_board()
+        self.initialBoard = self.generate_board()
         self.attempted_moves = 0  
         self.valid_moves = 0     
         self.invalid_moves = 0
         self.steps = 0   
         self.save_initial_log()
         print("O tabuleiro foi iniciado com: " + str(self.count_filled_cells()) + " valores")
+
+    def generate_board(self):
+        jogos_folder = "jogos"
+
+        if not os.path.exists(jogos_folder):
+            raise FileNotFoundError(f"A pasta '{jogos_folder}' não existe.")
+
+        sudoku_files = [f for f in os.listdir(jogos_folder) if f.startswith("sudoku") and f.endswith(".json")]
+
+        if not sudoku_files:
+            raise FileNotFoundError("Nenhum arquivo de tabuleiro completo encontrado na pasta 'jogos'.")
+
+        complete_sudoku_file = random.choice(sudoku_files)
+        complete_sudoku_path = os.path.join(jogos_folder, complete_sudoku_file)
+
+        with open(complete_sudoku_path, "r") as file:
+            complete_board = json.load(file)
+
+        num_cells_remain = random.choices(
+            population=[random.randint(17, 20), random.randint(21, 25), random.randint(26, 30)],
+            weights=[1, 2, 3],
+            k=1
+        )[0]
+
+        print(f"Gerando um tabuleiro com {num_cells_remain} células preenchidas.")
+        print(f"\nGerando novo tabuleiro a partir do arquivo: {complete_sudoku_file}\n")
+
+        cells_removed = 0
+        while cells_removed < 81 - num_cells_remain:
+            row, col = random.randint(0, 8), random.randint(0, 8)
+            if complete_board[row][col] != 0:
+                complete_board[row][col] = 0
+                cells_removed += 1
+
+        self.board = complete_board
+
+        return self.board
 
     def generate_random_board(self):
         num_initial_cells = random.randint(17, 30)  
@@ -46,6 +84,7 @@ class Sudoku:
 
             attempts += 1  
         return self.board
+    
     def count_filled_cells(self):
         filled_cells = 0
         for row in self.board:

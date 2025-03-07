@@ -56,7 +56,7 @@ def main():
                 print("\nTabuleiro resolvido:")
                 game.display_board()
                 
-                save_board_to_json(game.board)
+                #save_board_to_json(game.board)
             else:
                 print("\nNão foi possível resolver o Sudoku.")
                 steps = game.get_steps()
