@@ -72,7 +72,8 @@ class Sudoku:
             "levels": [],  
             "total_nodes": 0,  
             "max_level": 0,  
-            "solution_found": False  
+            "solution_found": False,
+            "total_steps": 0
         }
 
         states = [(initial_state, 0)]  # Lista de tuplas (estado, nível)
@@ -104,7 +105,7 @@ class Sudoku:
 
             tree_info["levels"][current_level]["nodes"] += 1
             tree_info["total_nodes"] += 1
-
+            tree_info["total_steps"] = self.steps
             for number in range(1, 10):
                 if self.is_valid_move(row, col, number):
                     new_state = deepcopy(current_state)
@@ -113,6 +114,7 @@ class Sudoku:
                     # Adiciona o novo estado à lista de estados
                     states.append((new_state, current_level + 1))
 
+        tree_info["total_steps"] = self.steps
         self._save_tree_info(tree_info)
         return False  
 
