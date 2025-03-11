@@ -4,11 +4,12 @@ import os
 import json
 from utils import is_complete, log_move, save_board_to_json
 from datetime import datetime
-
+from copy import deepcopy
 
 class Sudoku:
     def __init__(self): 
         self.logs_folder = "logs"
+        self.bfs_folder = "busca_em_largura" 
         if not os.path.exists(self.logs_folder):
             os.makedirs(self.logs_folder)
         self.sudoku_id = str(uuid.uuid4())  # ID único
@@ -60,31 +61,73 @@ class Sudoku:
 
         return self.board
 
-    def generate_random_board(self):
-        num_initial_cells = random.randint(17, 30)  
-        """
-        17 - 20 : Dificuldade Alta
-        21 - 25 : Dificuldade Média
-        26 - 30 : Dificuldade Fácil
-        """
-        print("Expectativa de iniciativa de tabuleiro: " + str(num_initial_cells))
+    def solve_sudoku_bfs(self):
+        self.steps = 0
+        initial_state = deepcopy(self.board)
+        if not os.path.exists(self.bfs_folder):
+            os.makedirs(self.bfs_folder)
+            print(f"Pasta '{self.bfs_folder}' criada.")
+        
+        tree_info = {
+            "levels": [],  
+            "total_nodes": 0,  
+            "max_level": 0,  
+            "solution_found": False  
+        }
 
-        # Medida de segurança para evitar loop infinito
-        attempts = 0  
-        max_attempts = 1000  
-        while attempts < max_attempts and num_initial_cells > 0:
-            row, col = random.randint(0, 8), random.randint(0, 8)
+        states = [(initial_state, 0)]  # Lista de tuplas (estado, nível)
 
-            if self.board[row][col] == 0:
-                value = random.randint(1, 9)
+        while states:
+            current_state, current_level = states.pop(0)  
+            self.board = deepcopy(current_state)
+            self.steps += 1
 
-                if self.is_valid_move(row, col, value):
-                    self.board[row][col] = value
-                    num_initial_cells -= 1  
+            # Log de progresso
+            if self.steps % 1000 == 0:  
+                print(f"Passos realizados: {self.steps}, Estados na fila: {len(states)}")
 
-            attempts += 1  
-        return self.board
-    
+            empty_location = self._find_empty_location()
+            if not empty_location:
+                tree_info["solution_found"] = True
+                self._save_tree_info(tree_info)
+                return True  
+
+            row, col = empty_location
+
+            # Atualiza o nível máximo
+            if current_level > tree_info["max_level"]:
+                tree_info["max_level"] = current_level
+
+            # Adiciona informações sobre o nível atual
+            if len(tree_info["levels"]) <= current_level:
+                tree_info["levels"].append({"level": current_level, "nodes": 0})  
+
+            tree_info["levels"][current_level]["nodes"] += 1
+            tree_info["total_nodes"] += 1
+
+            for number in range(1, 10):
+                if self.is_valid_move(row, col, number):
+                    new_state = deepcopy(current_state)
+                    new_state[row][col] = number
+
+                    # Adiciona o novo estado à lista de estados
+                    states.append((new_state, current_level + 1))
+
+        self._save_tree_info(tree_info)
+        return False  
+
+    def _save_tree_info(self, tree_info):
+        filename = os.path.join(self.bfs_folder, f"sudoku_tree_info_{self.sudoku_id}.json")
+        try:
+            with open(filename, "w") as file:
+                json.dump(tree_info, file, indent=4)
+            print(f"Informações da árvore salvas em {filename}")
+        except Exception as e:
+            print(f"Erro ao salvar as informações da árvore: {e}")
+
+    def _format_board(self, board):
+        """Formata o tabuleiro para exibição no nó."""
+        return "\n".join([" ".join(str(cell) if cell != 0 else "." for cell in row) for row in board])
     def count_filled_cells(self):
         filled_cells = 0
         for row in self.board:

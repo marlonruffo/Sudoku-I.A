@@ -62,9 +62,23 @@ def main():
                 steps = game.get_steps()
                 print(f"Passos aplicados: {steps}")
 
+        elif choice == "3":
+            print("Tabuleiro inicial:")
+            game.display_board()
 
+            if game.solve_sudoku_bfs():
+                print("\nSudoku resolvido com sucesso!")
+                steps = game.get_steps()
+                print(f"Passos necessários para resolver: {steps}")
 
-        # elif choice == '3':
+                print("\nTabuleiro resolvido:")
+                game.display_board()
+
+                #save_board_to_json(game.board)
+            else:
+                print("\nNão foi possível resolver o Sudoku.")
+                steps = game.get_steps()
+                print(f"Passos aplicados: {steps}")
 
         # elif choice == '4':
 
@@ -73,7 +87,6 @@ def main():
         # elif choice == '6':
 
         # elif choice == '7':
-
 
         elif choice == "0":
             print("Saindo. Obrigado por usar o Sudoku Solver!")
