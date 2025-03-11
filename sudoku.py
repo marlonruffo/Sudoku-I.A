@@ -7,21 +7,26 @@ from datetime import datetime
 
 
 class Sudoku:
-    def __init__(self): 
+
+    def __init__(self, game): 
         self.logs_folder = "logs"
         if not os.path.exists(self.logs_folder):
             os.makedirs(self.logs_folder)
         self.sudoku_id = str(uuid.uuid4())  # ID único
         self.log_filename = os.path.join(self.logs_folder, f"sudoku_log_{self.sudoku_id}.json")
         self.board = [[0 for _ in range(9)] for _ in range(9)]  
-        #self.initialBoard = self.generate_random_board()
-        self.initialBoard = self.generate_board()
         self.attempted_moves = 0  
         self.valid_moves = 0     
         self.invalid_moves = 0
-        self.steps = 0   
+        self.steps = 0
+        self.game = game
+        self.initialBoard = self.generate_board()
+        self.board = [row[:] for row in self.initialBoard]
         self.save_initial_log()
         print("O tabuleiro foi iniciado com: " + str(self.count_filled_cells()) + " valores")
+
+    def update_initial_board(self):
+        self.board = [row[:] for row in self.initialBoard]
 
     def generate_board(self):
         jogos_folder = "jogos"
@@ -34,8 +39,17 @@ class Sudoku:
         if not sudoku_files:
             raise FileNotFoundError("Nenhum arquivo de tabuleiro completo encontrado na pasta 'jogos'.")
 
-        complete_sudoku_file = random.choice(sudoku_files)
-        complete_sudoku_path = os.path.join(jogos_folder, complete_sudoku_file)
+        if self.game == -1:
+            complete_sudoku_file = random.choice(sudoku_files)
+            complete_sudoku_path = os.path.join(jogos_folder, complete_sudoku_file)
+        else:
+            # Ajustando a construção do nome do arquivo para o formato correto
+            complete_sudoku_file = f"sudoku_{self.game}.json"
+            complete_sudoku_path = os.path.join(jogos_folder, complete_sudoku_file)
+
+            # Verifica se o arquivo específico existe com o nome correto
+            if complete_sudoku_file not in sudoku_files:
+                raise FileNotFoundError(f"O arquivo '{complete_sudoku_file}' não existe na pasta 'jogos'.")
 
         with open(complete_sudoku_path, "r") as file:
             complete_board = json.load(file)
@@ -46,8 +60,8 @@ class Sudoku:
             k=1
         )[0]
 
-        print(f"Gerando um tabuleiro com {num_cells_remain} células preenchidas.")
-        print(f"\nGerando novo tabuleiro a partir do arquivo: {complete_sudoku_file}\n")
+        print(f"\nGerando um tabuleiro com {num_cells_remain} células preenchidas.")
+        print(f"Tabuleiro gerado a partir do arquivo: {complete_sudoku_file}")
 
         cells_removed = 0
         while cells_removed < 81 - num_cells_remain:
@@ -56,9 +70,9 @@ class Sudoku:
                 complete_board[row][col] = 0
                 cells_removed += 1
 
-        self.board = complete_board
+        self.initialBoard = complete_board
 
-        return self.board
+        return self.initialBoard
 
     def generate_random_board(self):
         num_initial_cells = random.randint(17, 30)  
@@ -83,7 +97,7 @@ class Sudoku:
                     num_initial_cells -= 1  
 
             attempts += 1  
-        return self.board
+        return self.initialBoard
     
     def count_filled_cells(self):
         filled_cells = 0
