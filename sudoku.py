@@ -117,6 +117,19 @@ class Sudoku:
                 if self.board[r][c] == value:
                     return False
         return True
+    
+    def is_valid_move_on_board(self, board, row, col, value):
+        if value in board[row]:
+            return False
+        if any(board[r][col] == value for r in range(9)):
+            return False
+
+        start_row, start_col = 3 * (row // 3), 3 * (col // 3)
+        for r in range(start_row, start_row + 3):
+            for c in range(start_col, start_col + 3):
+                if board[r][c] == value:
+                    return False
+        return True
 
     def make_move(self, row, col, value):
         is_a_valid_move = False
@@ -190,5 +203,35 @@ class Sudoku:
                     return True
 
                 self.board[row][col] = 0
+
+        return False
+    
+    def solve_sudoku_dfs(self):
+        stack = [((0, 0), [row[:] for row in self.board])]  # position stack and board copy
+        self.steps = 0
+
+        while stack:
+            (row, col), current_board = stack.pop()
+
+            while row < 9 and current_board[row][col] != 0:
+                col += 1
+                if col == 9:
+                    col = 0
+                    row += 1
+
+            if row == 9:
+                self.board = current_board
+                return True
+
+            for number in range(1, 10):
+                if self.is_valid_move_on_board(current_board, row, col, number):
+                    new_board = [r[:] for r in current_board]
+                    new_board[row][col] = number
+
+                    if col == 8:
+                        stack.append(((row + 1, 0), new_board))
+                    else:
+                        stack.append(((row, col + 1), new_board))
+                    self.steps += 1
 
         return False

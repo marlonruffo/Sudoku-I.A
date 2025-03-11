@@ -62,11 +62,24 @@ def main():
                 steps = game.get_steps()
                 print(f"Passos aplicados: {steps}")
 
-
-
         # elif choice == '3':
 
-        # elif choice == '4':
+        elif choice == '4':
+            print("Tabuleiro inicial:")
+            game.display_board()
+
+            if game.solve_sudoku_dfs():
+                print("\nSudoku resolvido com sucesso!")
+                steps = game.get_steps()
+                print(f"Passos necessários para resolver: {steps}")
+
+                print("\nTabuleiro resolvido:")
+                game.display_board()
+            else:
+                print("\nNão foi possível resolver o Sudoku.")
+                steps = game.get_steps()
+                print(f"Passos aplicados: {steps}")        
+
 
         # elif choice == '5':
 
