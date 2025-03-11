@@ -93,7 +93,8 @@ def main():
                 print(f"Passos necessários para resolver: {steps}")
 
                 print("\nTabuleiro resolvido:")
-                game.display_board()                
+                game.display_board()  
+                game.save_search_tree()              
                 #save_board_to_json(game.board)
             else:
                 print("\nNão foi possível resolver o Sudoku.")

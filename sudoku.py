@@ -22,6 +22,7 @@ class Sudoku:
         self.steps = 0   
         self.save_initial_log()
         print("O tabuleiro foi iniciado com: " + str(self.count_filled_cells()) + " valores")
+        self.search_tree = []  # Armazena os passos da árvore de busca
 
     def generate_board(self):
         jogos_folder = "jogos"
@@ -252,20 +253,30 @@ class Sudoku:
 
         return best_cell  # Retorna a melhor célula e as opções de valores possíveis
 
-    def gulosa_sudoku_solver(self):
+    def gulosa_sudoku_solver(self, depth=0, path="root"):
         """Resolve Sudoku usando uma estratégia gulosa."""
         best_cell = self.find_best_cell()
 
         if not best_cell:
             return True  # Sudoku resolvido!
+        
+        row, col, options = best_cell
+        node = {"depth": depth, "position": (row, col), "options": options, "path": path}
+        self.search_tree.append(node)
 
         row, col, options = best_cell
         for num in sorted(options):  # Ordenação pode ajudar a encontrar uma solução mais rápido
             self.steps += 1
             self.board[row][col] = num
-            if self.gulosa_sudoku_solver():
+            if self.gulosa_sudoku_solver(depth + 1, path + f" -> ({row}, {col})={num}"):
                 return True
+            print("Desfazendo tentativa depth:", depth)
             self.board[row][col] = 0  # Se falhou, desfaz a tentativa
 
         return False  # Nenhuma opção funcionou
+    
+    def save_search_tree(self, filename="search_tree.json"):
+        """Salva a árvore de busca em um arquivo JSON."""
+        with open(filename, "w") as f:
+            json.dump(self.search_tree, f, indent=4)
     #Fim busca gulosa
