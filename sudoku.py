@@ -1,6 +1,7 @@
 import random
 import uuid
 import os
+import heapq
 import json
 from utils import is_complete, log_move, save_board_to_json
 from datetime import datetime
@@ -235,3 +236,91 @@ class Sudoku:
                     self.steps += 1
 
         return False
+    
+    def solve_sudoku_ordered(self, debug=False, debug_interval=1000, max_iterations=1000000):
+        """
+        Implementa a busca ordenada (custo uniforme) para resolver o Sudoku,
+        onde o custo de preencher uma célula é definido como:
+            custo = 1 + 0.1 * (linha + coluna)
+        Durante a busca, guarda o estado com o maior número de células preenchidas.
+        Se o limite de iterações for atingido, esse estado parcial é exibido.
+        
+        Parâmetros:
+        - debug: se True, imprime mensagens de depuração.
+        - debug_interval: intervalo de iterações para exibir status.
+        - max_iterations: número máximo de iterações permitidas.
+        """
+        self.steps = 0
+        open_list = []
+        count = 0  # contador para desempate (mantém a ordem de inserção)
+        initial_board = [row[:] for row in self.board]
+        heapq.heappush(open_list, (0, count, initial_board))
+        visited = set()
+        iterations = 0
+
+        # Variáveis para manter o melhor estado parcial
+        best_state = None
+        best_filled_count = -1
+
+        while open_list:
+            iterations += 1
+            if debug and iterations % debug_interval == 0:
+                print(f"Iteração {iterations}: open_list tamanho = {len(open_list)}, passos = {self.steps}, custo atual = {open_list[0][0]:.2f}")
+            if iterations > max_iterations:
+                print("Limite máximo de iterações atingido. Encerrando busca para depuração.")
+                if best_state is not None:
+                    self.board = best_state
+                    print(f"Melhor estado parcial com {best_filled_count} células preenchidas:")
+                    self.display_board()
+                return False
+
+            cost, _, current_board = heapq.heappop(open_list)
+
+            # Atualiza o melhor estado parcial, se o atual tiver mais células preenchidas
+            filled_count = sum(1 for row in current_board for cell in row if cell != 0)
+            if filled_count > best_filled_count:
+                best_filled_count = filled_count
+                best_state = current_board
+
+            if is_complete(current_board):
+                self.board = current_board
+                if debug:
+                    print(f"Solução encontrada em {iterations} iterações com custo total {cost:.2f}.")
+                return True
+
+            # Encontra a primeira célula vazia (ordem fixa)
+            empty_cell = None
+            for row in range(9):
+                for col in range(9):
+                    if current_board[row][col] == 0:
+                        empty_cell = (row, col)
+                        break
+                if empty_cell is not None:
+                    break
+
+            if empty_cell is None:
+                continue
+
+            # Define o custo adicional para preencher a célula, escalado para não aumentar demais
+            additional_cost = 1 + 0.1 * (empty_cell[0] + empty_cell[1])
+
+            # Expande o nó: tenta preencher a célula vazia com números de 1 a 9
+            for num in range(1, 10):
+                if self.is_valid_move_on_board(current_board, empty_cell[0], empty_cell[1], num):
+                    new_board = [r[:] for r in current_board]
+                    new_board[empty_cell[0]][empty_cell[1]] = num
+                    new_cost = cost + additional_cost
+                    board_tuple = tuple(tuple(r) for r in new_board)
+                    if board_tuple in visited:
+                        continue
+                    visited.add(board_tuple)
+                    count += 1
+                    heapq.heappush(open_list, (new_cost, count, new_board))
+                    self.steps += 1
+
+        print("Busca encerrada sem encontrar solução.")
+        return False
+
+
+
+

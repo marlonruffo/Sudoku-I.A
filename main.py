@@ -81,7 +81,21 @@ def main():
                 print(f"Passos aplicados: {steps}")        
 
 
-        # elif choice == '5':
+        elif choice == "5":
+            print("Tabuleiro inicial:")
+            game.display_board()
+
+            if game.solve_sudoku_ordered():
+                print("\nSudoku resolvido com sucesso por Busca Ordenada!")
+                steps = game.get_steps()
+                print(f"Passos necessários para resolver: {steps}")
+
+                print("\nTabuleiro resolvido:")
+                game.display_board()
+            else:
+                print("\nNão foi possível resolver o Sudoku com Busca Ordenada.")
+                steps = game.get_steps()
+                print(f"Passos aplicados: {steps}")
 
         # elif choice == '6':
 
