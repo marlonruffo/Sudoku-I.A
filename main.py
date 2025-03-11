@@ -83,7 +83,22 @@ def main():
 
         # elif choice == '5':
 
-        # elif choice == '6':
+        elif choice == '6':
+            print("Tabuleiro inicial:")
+            game.display_board()
+
+            if game.gulosa_sudoku_solver():
+                print("\nSudoku resolvido com sucesso!")
+                steps = game.get_steps()
+                print(f"Passos necessários para resolver: {steps}")
+
+                print("\nTabuleiro resolvido:")
+                game.display_board()                
+                #save_board_to_json(game.board)
+            else:
+                print("\nNão foi possível resolver o Sudoku.")
+                steps = game.get_steps()
+                print(f"Passos aplicados: {steps}")
 
         # elif choice == '7':
 

@@ -235,3 +235,37 @@ class Sudoku:
                     self.steps += 1
 
         return False
+    
+        #Inicio busca gulosa 
+    def find_best_cell(self):
+        """Encontra a célula vazia com o menor número de possibilidades."""
+        min_options = 10  # Maior que o número máximo de opções (1 a 9)
+        best_cell = None
+
+        for row in range(9):
+            for col in range(9):
+                if self.board[row][col] == 0:  # Célula vazia
+                    options = [num for num in range(1, 10) if self.is_valid_move(row, col, num)]
+                    if len(options) < min_options:
+                        min_options = len(options)
+                        best_cell = (row, col, options)
+
+        return best_cell  # Retorna a melhor célula e as opções de valores possíveis
+
+    def gulosa_sudoku_solver(self):
+        """Resolve Sudoku usando uma estratégia gulosa."""
+        best_cell = self.find_best_cell()
+
+        if not best_cell:
+            return True  # Sudoku resolvido!
+
+        row, col, options = best_cell
+        for num in sorted(options):  # Ordenação pode ajudar a encontrar uma solução mais rápido
+            self.steps += 1
+            self.board[row][col] = num
+            if self.gulosa_sudoku_solver():
+                return True
+            self.board[row][col] = 0  # Se falhou, desfaz a tentativa
+
+        return False  # Nenhuma opção funcionou
+    #Fim busca gulosa
