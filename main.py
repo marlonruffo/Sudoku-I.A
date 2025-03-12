@@ -85,16 +85,15 @@ def game_options(game, second_choice):
     #     else:
     #         fail(game)
 
-    # elif second_choice == '6':
-    #     print("Tabuleiro inicial:")
-    #     game.display_board()
-    #
-    #     if game.solve_A_star():
-    #         sucess(game)
-    #         print("Resolvido por A*")
-    #         tabuleiro_resolvido(game)
-    #     else:
-    #         fail(game)
+    elif second_choice == '6':
+        print("Tabuleiro inicial:")
+        game.display_board()
+        if game.solve_A_star():
+            sucess(game)
+            print("Resolvido por A*")
+            tabuleiro_resolvido(game)
+        else:
+            fail(game)
 
     elif second_choice == '7':
 
@@ -145,13 +144,13 @@ def game_options(game, second_choice):
         # else:
         #     fail(game)
         # # A*
-        # if game.solve_A_star():
-        #     sucess(game)
-        #     print("Resolvido por A*")
-        #     tabuleiro_resolvido(game)
-        #     game.update_initial_board
-        # else:
-        #     fail(game)
+        if game.solve_A_star():
+            sucess(game)
+            print("Resolvido por A*")
+            tabuleiro_resolvido(game)
+            game.update_initial_board
+        else:
+            fail(game)
 
 
 def main():

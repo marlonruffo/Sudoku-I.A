@@ -4,6 +4,8 @@ import os
 import json
 from utils import is_complete, log_move, save_board_to_json
 from datetime import datetime
+import heapq
+import copy
 
 
 class Sudoku:
@@ -249,3 +251,67 @@ class Sudoku:
                     self.steps += 1
 
         return False
+    
+    def is_valid(self, row, col, num):
+         """Verifica se um número pode ser colocado em uma célula específica."""
+         for i in range(9):
+             if self.board[row][i] == num or self.board[i][col] == num:
+                 return False
+         
+         start_row, start_col = 3 * (row // 3), 3 * (col // 3)
+         for i in range(3):
+             for j in range(3):
+                 if self.board[start_row + i][start_col + j] == num:
+                     return False
+         return True
+ 
+    def get_empty_cells(self):
+         """Retorna uma lista de células vazias ordenadas pelo número de possibilidades."""
+         empty_cells = []
+         for row in range(9):
+             for col in range(9):
+                 if self.board[row][col] == 0:
+                     possibilities = [num for num in range(1, 10) if self.is_valid( row, col, num)]
+                     heapq.heappush(empty_cells, (len(possibilities), row, col, possibilities))
+         return empty_cells
+     
+    def print_board(self):
+         """Imprime o tabuleiro atual de forma organizada."""
+         for row in self.board:
+             print(" ".join(str(num) if num != 0 else '.' for num in row))
+         print("\n" + "-"*25 + "\n")
+ 
+    def solve_A_star(self):
+         """Resolve o Sudoku usando o algoritmo A*."""
+         priority_queue = [(0, self.board)]  # (custo, estado_atual)
+         iterations = 0  # Contador de iterações
+         max_iterations = 10000  # Limite de iterações
+         self.steps = 0
+         
+         while priority_queue:
+             iterations += 1
+             if iterations > max_iterations:
+                 print("Limite de iterações atingido! Pode haver um loop infinito.")
+                 return False
+             
+             _, current_board = heapq.heappop(priority_queue)
+             self.board = current_board  # Atualiza a referência do tabuleiro
+             empty_cells = self.get_empty_cells()
+             
+             if not empty_cells:
+                 return current_board  # Solução encontrada
+             
+             _, row, col, possibilities = heapq.heappop(empty_cells)
+             
+             for num in possibilities:
+                 new_board = copy.deepcopy(current_board)
+                 new_board[row][col] = num
+                 heapq.heappush(priority_queue, (len(empty_cells), new_board))
+                 
+             # Debug: Mostrar o tabuleiro a cada 100 iterações
+             if iterations % 100 == 0:
+                 print(f"\nEstado do tabuleiro após {iterations} iterações:")
+                 self.print_board()
+             self.steps = iterations
+         
+         return False  # Nenhuma solução encontrada
