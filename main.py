@@ -85,7 +85,22 @@ def main():
 
         # elif choice == '6':
 
-        # elif choice == '7':
+        elif choice == '7':
+            print("Tabuleiro inicial:")
+            game.display_board()
+
+            if game.solve_A_star():
+                print("\nSudoku resolvido com sucesso!")
+                steps = game.get_steps()
+                print(f"Passos necessários para resolver: {steps}")
+
+                print("\nTabuleiro resolvido:")
+                game.display_board()
+            else:
+
+                print("\nNão foi possível resolver o Sudoku.")
+                steps = game.get_steps()
+                print(f"Passos aplicados: {steps}")   
 
 
         elif choice == "0":
