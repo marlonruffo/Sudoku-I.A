@@ -155,6 +155,8 @@ def game_options(game, second_choice):
 
 def main():
     print("Bem-vindo ao Sudoku!")
+    fixed_board = None  # Variável para armazenar o tabuleiro fixo
+    selected_game = None  # Armazena o número do jogo escolhido
 
     while True:
         print("\nSelecione uma opção:")
@@ -165,25 +167,23 @@ def main():
         first_choice = input("Sua escolha: ")
 
         if first_choice == "1":
-
             while True:
-
                 game = Sudoku(-1)
+                fixed_board = [row[:] for row in game.initialBoard]  # Salva o tabuleiro fixo
 
                 menu()
                 second_choice = input("Sua escolha: ")
 
-                if second_choice == "1" or second_choice == "2" or second_choice == "3" or second_choice == "4" or second_choice == "5" or second_choice == "6" or second_choice == "7":
-                    game_options(game, second_choice)      
+                if second_choice in ["1", "2", "3", "4", "5", "6", "7"]:
+                    game_options(Sudoku(-1, fixed_board), second_choice)      
 
                 elif second_choice == "0":
                     print("Saindo. Obrigado por usar o Sudoku Solver!")
                     break
                 else:
                     print("Opção inválida. Por favor, escolha uma opção válida.")                    
-        
-        elif first_choice == "2":
 
+        elif first_choice == "2":
             while True:
                 try:
                     game_choice = input("Escolha um jogo entre 1 a 200: ")
@@ -196,19 +196,22 @@ def main():
 
                 except ValueError:
                     print("Entrada inválida! Por favor, insira um número entre 1 e 200.")
+
+            selected_game = game_choice_int  # Salva o número do jogo escolhido
             
+            # Gerar o tabuleiro uma única vez e armazená-lo
+            game = Sudoku(selected_game)
+            fixed_board = [row[:] for row in game.initialBoard]
+
             while True:
-
-                game = Sudoku(game_choice_int)
-
                 menu()
                 second_choice = input("Sua escolha: ")
 
-                if second_choice == "1" or second_choice == "2" or second_choice == "3" or second_choice == "4" or second_choice == "5" or second_choice == "6" or second_choice == "7":
-                    game_options(game, second_choice)            
+                if second_choice in ["1", "2", "3", "4", "5", "6", "7"]:
+                    game_options(Sudoku(selected_game, fixed_board), second_choice)
 
                 elif second_choice == "0":
-                    print("Voltando para a tela incial!")
+                    print("Voltando para a tela inicial!")
                     break
                 else:
                     print("Opção inválida. Por favor, escolha uma opção válida.")      
@@ -219,6 +222,7 @@ def main():
 
         else:
             print("Opção inválida. Por favor, escolha uma opção válida.")
+
 
 
 if __name__ == "__main__":
