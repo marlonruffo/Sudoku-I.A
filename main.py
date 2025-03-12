@@ -40,16 +40,16 @@ def game_options(game, second_choice):
         else:
             fail(game)
 
-    # elif second_choice == '2':
-    #     print("Tabuleiro inicial:")
-    #     game.display_board()
+    elif second_choice == '2':
+        print("Tabuleiro inicial:")
+        game.display_board()
 
-    #     if game.solve_sudoku_bfs():
-    #         sucess(game)
-    #         print("Resolvido por BFS")
-    #         tabuleiro_resolvido(game)            
-    #     else:
-    #         fail(game)
+        if game.solve_sudoku_bfs():
+            sucess(game)
+            print("Resolvido por BFS")
+            tabuleiro_resolvido(game)            
+        else:
+            fail(game)
 
     elif second_choice == '3':
         print("Tabuleiro inicial:")
@@ -111,13 +111,13 @@ def game_options(game, second_choice):
         else:
             fail(game)
         # # BFS
-        # if game.solve_sudoku_bfs():
-        #     sucess(game)
-        #     print("Resolvido por BFS")
-        #     tabuleiro_resolvido(game)
-        #     game.update_initial_board
-        # else:
-        #     fail(game)
+        if game.solve_sudoku_bfs():
+            sucess(game)
+            print("Resolvido por BFS")
+            tabuleiro_resolvido(game)
+            game.update_initial_board
+        else:
+            fail(game)
 
         # DFS
         if game.solve_sudoku_dfs():
