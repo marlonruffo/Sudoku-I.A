@@ -23,6 +23,7 @@ class Sudoku:
         self.invalid_moves = 0
         self.steps = 0
         self.game = game
+        self.search_tree = []  # Armazena os passos da árvore de busca
 
         if fixed_board is not None:
             # Se já existe um tabuleiro fixo, reutiliza ele
@@ -465,3 +466,48 @@ class Sudoku:
 
         print("Busca encerrada sem encontrar solução.")
         return False
+    
+    #Inicio busca gulosa 
+    def find_best_cell(self):
+        """Encontra a célula vazia com o menor número de possibilidades."""
+        min_options = 10  # Maior que o número máximo de opções (1 a 9)
+        best_cell = None
+
+        for row in range(9):
+            for col in range(9):
+                if self.board[row][col] == 0:  # Célula vazia
+                    options = [num for num in range(1, 10) if self.is_valid_move(row, col, num)]
+
+                    if len(options) < min_options:
+                        min_options = len(options)
+                        best_cell = (row, col, options)
+
+        return best_cell  # Retorna a melhor célula e as opções de valores possíveis
+
+    def gulosa_sudoku_solver(self, depth=0, path="root"):
+        """Resolve Sudoku usando uma estratégia gulosa."""
+        best_cell = self.find_best_cell()
+
+        if not best_cell:
+            return True  # Sudoku resolvido!
+        
+        row, col, options = best_cell
+        node = {"depth": depth, "position": (row, col), "options": options, "path": path}
+        self.search_tree.append(node)
+
+        row, col, options = best_cell
+        for num in sorted(options):  # Ordenação pode ajudar a encontrar uma solução mais rápido
+            self.steps += 1
+            self.board[row][col] = num
+            if self.gulosa_sudoku_solver(depth + 1, path + f" -> ({row}, {col})={num}"):
+                return True
+            print("Desfazendo tentativa depth:", depth)
+            self.board[row][col] = 0  # Se falhou, desfaz a tentativa
+
+        return False  # Nenhuma opção funcionou
+    
+    def save_search_tree(self, filename="search_tree.json"):
+        """Salva a árvore de busca em um arquivo JSON."""
+        with open(filename, "w") as f:
+            json.dump(self.search_tree, f, indent=4)
+    #Fim busca gulosa

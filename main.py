@@ -74,16 +74,17 @@ def game_options(game, second_choice):
         else:
             fail(game)
 
-    # elif second_choice == '5':
-    #     print("Tabuleiro inicial:")
-    #     game.display_board()
+    elif second_choice == '5':
+        print("Tabuleiro inicial:")
+        game.display_board()
 
-    #     if game.gulosa_sudoku_solver():
-    #         sucess(game)
-    #         print("Resolvido por Gulosa")
-    #         tabuleiro_resolvido(game)
-    #     else:
-    #         fail(game)
+        if game.gulosa_sudoku_solver():
+            sucess(game)
+            print("Resolvido por Gulosa")
+            tabuleiro_resolvido(game)
+            game.save_search_tree()
+        else:
+            fail(game)
 
     elif second_choice == '6':
         print("Tabuleiro inicial:")
@@ -128,21 +129,21 @@ def game_options(game, second_choice):
         else:
             fail(game)
         # # Ordered
-        # if game.solve_sudoku_ordered():
-        #     sucess(game)
-        #     print("Resolvido por Ordered")
-        #     tabuleiro_resolvido(game)
-        #     game.update_initial_board()
-        # else:
-        #     fail(game)
-        # # Gulosa
-        # if game.gulosa_sudoku_solver():
-        #     sucess(game)
-        #     print("Resolvido por Gulosa")
-        #     tabuleiro_resolvido(game)
-        #     game.update_initial_board()
-        # else:
-        #     fail(game)
+        if game.solve_sudoku_ordered():
+            sucess(game)
+            print("Resolvido por Ordered")
+            tabuleiro_resolvido(game)
+            game.update_initial_board()
+        else:
+            fail(game)
+        # Gulosa
+        if game.gulosa_sudoku_solver():
+            sucess(game)
+            print("Resolvido por Gulosa")
+            tabuleiro_resolvido(game)
+            game.update_initial_board()
+        else:
+            fail(game)
         # # A*
         if game.solve_A_star():
             sucess(game)
@@ -189,7 +190,7 @@ def main():
                     game_choice = input("Escolha um jogo entre 1 a 200: ")
                     game_choice_int = int(game_choice)
 
-                    if 1 <= game_choice_int <= 200:
+                    if 1 <= game_choice_int <= 201:
                         break
                     else:
                         print("O valor deve estar entre 1 e 200. Tente novamente.")
