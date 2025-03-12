@@ -63,16 +63,16 @@ def game_options(game, second_choice):
         else:
             fail(game)
 
-    # elif second_choice == '4':
-    #     print("Tabuleiro inicial:")
-    #     game.display_board()
+    elif second_choice == '4':
+        print("Tabuleiro inicial:")
+        game.display_board()
 
-    #     if game.solve_sudoku_ordered():
-    #         sucess(game)
-    #         print("Resolvido por Ordered")
-    #         tabuleiro_resolvido(game)
-    #     else:
-    #         fail(game)
+        if game.solve_sudoku_ordered():
+            sucess(game)
+            print("Resolvido por Ordered")
+            tabuleiro_resolvido(game)
+        else:
+            fail(game)
 
     # elif second_choice == '5':
     #     print("Tabuleiro inicial:")
